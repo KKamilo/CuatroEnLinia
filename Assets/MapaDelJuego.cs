@@ -4,20 +4,27 @@ using UnityEngine;
 
 public class MapaDelJuego : MonoBehaviour
 {
+    //variables que se usan
     public int width = 10;
     public int height = 10;
-    GameObject[,] matriz; //grid
+    int turnos = 0;
+    GameObject[,] matriz; 
+    public GameObject gama;
+    //variables de color
     public Color baseColor;
     public Color jugador1;
     public Color jugador2;
-    public Color IA;
+    public Color iA;
+    // variables que indican el turno del jugador y en el turno en el que estan
     public TextMesh m3Dtext;
     public TextMesh ronda;
     public float distance = 0;
+    // Vatiables de control del juego y los jugadores
     bool turno;
-    int turnos = 1;
+    bool gameOver= true;
     void Start()
     {
+        // creacion de esferas en el tablero
         matriz = new GameObject[width, height];
         for (int x = 0; x < width; x++)
         {
@@ -32,15 +39,18 @@ public class MapaDelJuego : MonoBehaviour
     }  
     void Update()
     {
-        Vector3 mPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (!turno)
+        if(gameOver == true)
         {
-            m3Dtext.text = "Jugador = 1.";
+            Vector3 mPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (!turno)
+            {
+                m3Dtext.text = "Jugador = 1.";
+            }
+            else
+                m3Dtext.text = "Jugador = 2.";
+            ronda.text = ("Turno = " + turnos);
+            PintarFicha(mPosition);
         }
-        else
-            m3Dtext.text = "Jugador = 2.";
-        ronda.text = ("Turno = " + turnos);
-        PintarFicha(mPosition);
     }
     void PintarFicha(Vector3 position)
     {
@@ -56,21 +66,21 @@ public class MapaDelJuego : MonoBehaviour
                     Color colorAUsar = Color.clear;
                     if (!turno)
                     {
-                        
                         colorAUsar = jugador1;
                         esfera.GetComponent<Renderer>().material.color = jugador1;
                         turno = true;
                         Verificar(x, y, colorAUsar);
                         Verificar2(x, y, colorAUsar);
+                        turnos++;
                     }
                     else 
                     {
-                        
                         colorAUsar = jugador2;
                         esfera.GetComponent<Renderer>().material.color = jugador2;
                         turno = false;
                         Verificar(x, y, colorAUsar);
                         Verificar2(x, y, colorAUsar);
+                        turnos++;
                     }
                     if (turnos % 2 == 0)
                     {
@@ -93,11 +103,11 @@ public class MapaDelJuego : MonoBehaviour
                         }
                     }
                 }
-                turnos++;
+                
             }
         }
     }
-    public void Verificar(int s, int q, Color colorVerificar)
+    public void Verificar(int x, int y, Color colorVerificar)
     {
         int gana, verifica;
         verifica = 0;
@@ -105,17 +115,18 @@ public class MapaDelJuego : MonoBehaviour
         //horizontal
         if (verifica == 0)
         {
-            for (int i = s - 3; i < s + 4; i++)
+            for (int i = x - 3; i < x + 4; i++)
             {
                 if (i < 0 || i >= width)
                     continue;
-                GameObject esfera = matriz[i, q];
+                GameObject esfera = matriz[i, y];
                 if (esfera.GetComponent<Renderer>().material.color == colorVerificar)
                 {
                     gana++;
                     if (gana == 4)
                     {
-                        print("ganas");
+                        gama.SetActive(true);
+                        gameOver = false;
                     }
                 }
                 else
@@ -129,18 +140,19 @@ public class MapaDelJuego : MonoBehaviour
         // vertical
         if (verifica ==1)
         {
-            for (int j = q - 3; j < q + 4; j++)
+            for (int j = y - 3; j < y + 4; j++)
             {
                 if (j < 0 || j >= height)
                     continue;
-                GameObject esfera = matriz[s, j];
+                GameObject esfera = matriz[x, j];
 
                 if (esfera.GetComponent<Renderer>().material.color == colorVerificar)
                 {
                     gana++;
                     if (gana == 4)
                     {
-                        print("ganas");
+                        gama.SetActive(true);
+                        gameOver = false;
                     }
                 }
                 else
@@ -156,7 +168,6 @@ public class MapaDelJuego : MonoBehaviour
         int gana, verifica;
         verifica = 0;
         gana = 0;
-
         //diagonal ariba
         if (verifica == 0)
         {
@@ -172,7 +183,8 @@ public class MapaDelJuego : MonoBehaviour
                         gana++;
                         if (gana == 4)
                         {
-                            print("ganas");
+                            gama.SetActive(true);
+                            gameOver = false;
                         }
                     }
                     else
@@ -183,11 +195,9 @@ public class MapaDelJuego : MonoBehaviour
                 if (j < 0 || j < width)
                     j++;
             }
-            
             verifica++;
             gana = 0;
         }
-        
         // diagonal abajo
         if (verifica ==1)
         {
@@ -202,7 +212,8 @@ public class MapaDelJuego : MonoBehaviour
                         gana++;
                         if (gana == 4)
                         {
-                            print("ganas");
+                            gama.SetActive(true);
+                            gameOver = false;
                         }
                     }
                     else
@@ -213,7 +224,6 @@ public class MapaDelJuego : MonoBehaviour
                 if (k <0 || k<= width)
                 k--;
             }
-            
             gana = 0;
         }
     }
@@ -229,8 +239,8 @@ public class MapaDelJuego : MonoBehaviour
             GameObject esfera2 = matriz[i, j];
             if (esfera.GetComponent<Renderer>().material.color == baseColor)
             {
-                esfera.GetComponent<Renderer>().material.color = IA;
-                esfera2.GetComponent<Renderer>().material.color = IA;
+                esfera.GetComponent<Renderer>().material.color = iA;
+                esfera2.GetComponent<Renderer>().material.color = iA;
             }
         }
         else if (m==2)
@@ -260,9 +270,9 @@ public class MapaDelJuego : MonoBehaviour
             GameObject esfera3 = matriz[g, h];
             if (esfera.GetComponent<Renderer>().material.color == baseColor)
             {
-                esfera.GetComponent<Renderer>().material.color = IA;
-                esfera2.GetComponent<Renderer>().material.color = IA;
-                esfera3.GetComponent<Renderer>().material.color = IA;
+                esfera.GetComponent<Renderer>().material.color = iA;
+                esfera2.GetComponent<Renderer>().material.color = iA;
+                esfera3.GetComponent<Renderer>().material.color = iA;
             }
         }
     }
