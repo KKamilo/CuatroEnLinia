@@ -11,9 +11,11 @@ public class MapaDelJuego : MonoBehaviour
     public Color jugador1;
     public Color jugador2;
     public Color IA;
-    bool turno;
-    int turnos = 0;
+    public TextMesh m3Dtext;
+    public TextMesh ronda;
     public float distance = 0;
+    bool turno;
+    int turnos = 1;
     void Start()
     {
         matriz = new GameObject[width, height];
@@ -31,7 +33,14 @@ public class MapaDelJuego : MonoBehaviour
     void Update()
     {
         Vector3 mPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            PintarFicha(mPosition);
+        if (!turno)
+        {
+            m3Dtext.text = "Jugador = 1.";
+        }
+        else
+            m3Dtext.text = "Jugador = 2.";
+        ronda.text = ("Turno = " + turnos);
+        PintarFicha(mPosition);
     }
     void PintarFicha(Vector3 position)
     {
@@ -41,30 +50,32 @@ public class MapaDelJuego : MonoBehaviour
         {
             if (x >=0 && y >=0 && x < width && y< height)
             {
-                turnos++;
                 GameObject esfera = matriz[x, y];
                 if (esfera.GetComponent<Renderer>().material.color == baseColor)
                 {
                     Color colorAUsar = Color.clear;
-                    if (turno)
+                    if (!turno)
                     {
+                        
                         colorAUsar = jugador1;
                         esfera.GetComponent<Renderer>().material.color = jugador1;
-                        turno = false;
+                        turno = true;
                         Verificar(x, y, colorAUsar);
                         Verificar2(x, y, colorAUsar);
                     }
                     else 
                     {
+                        
                         colorAUsar = jugador2;
                         esfera.GetComponent<Renderer>().material.color = jugador2;
-                        turno = true;
+                        turno = false;
                         Verificar(x, y, colorAUsar);
                         Verificar2(x, y, colorAUsar);
                     }
                     if (turnos % 2 == 0)
                     {
-                        int iro = Random.Range(0, 2);
+                        print("Estoy en el si de turnos");
+                        int iro = Random.Range(0, 3);
                         switch (iro) // Swith que verifica el numero dado anterior.
                         {
                             case 0: // Primera opcion
@@ -75,11 +86,14 @@ public class MapaDelJuego : MonoBehaviour
                                 int nn = 2;
                                 Regla(nn);
                                 break;
+                            case 2: // Segunda opcion
+                                int m = 3;
+                                Regla(m);
+                                break;
                         }
                     }
                 }
-                print("turno es:" + turnos);
-                
+                turnos++;
             }
         }
     }
@@ -156,7 +170,6 @@ public class MapaDelJuego : MonoBehaviour
                     {
                         // print("Esfera que compara es:" + esfera.GetComponent<Renderer>().material.color + "color de jugador" + colorVerificar);
                         gana++;
-                        print("entre al si=> gana es: " + gana);
                         if (gana == 4)
                         {
                             print("ganas");
@@ -187,7 +200,6 @@ public class MapaDelJuego : MonoBehaviour
                     if (esfera.GetComponent<Renderer>().material.color == colorVerificar)
                     {
                         gana++;
-                        print("entre al si de diagonal => ganas es: " + gana);
                         if (gana == 4)
                         {
                             print("ganas");
@@ -211,23 +223,46 @@ public class MapaDelJuego : MonoBehaviour
         {
             int x = Random.Range(0, 10);
             int y = Random.Range(0, 10);
+            int i = Random.Range(0, 10);
+            int j = Random.Range(0, 10);
             GameObject esfera = matriz[x, y];
+            GameObject esfera2 = matriz[i, j];
             if (esfera.GetComponent<Renderer>().material.color == baseColor)
             {
                 esfera.GetComponent<Renderer>().material.color = IA;
+                esfera2.GetComponent<Renderer>().material.color = IA;
+            }
+        }
+        else if (m==2)
+        {
+            int randon = Random.Range(0, 2);
+            print("Randon es:"+ randon);
+            switch (randon) // Swith que verifica el numero dado anterior.
+            {
+                case 0: // Primera opcion
+                    turno = false;
+                    break;
+                case 1: // Segunda opcion
+                    turno = true;
+                    break;
             }
         }
         else
         {
-            int randon = Random.Range(0, 2);
-            switch (randon) // Swith que verifica el numero dado anterior.
+            int x = Random.Range(0, 10);
+            int y = Random.Range(0, 10);
+            int i = Random.Range(0, 10);
+            int j = Random.Range(0, 10);
+            int g = Random.Range(0, 10);
+            int h = Random.Range(0, 10);
+            GameObject esfera = matriz[x, y];
+            GameObject esfera2 = matriz[i, j];
+            GameObject esfera3 = matriz[g, h];
+            if (esfera.GetComponent<Renderer>().material.color == baseColor)
             {
-                case 0: // Primera opcion
-                    turno = true;
-                    break;
-                case 1: // Segunda opcion
-                    turno = false;
-                    break;
+                esfera.GetComponent<Renderer>().material.color = IA;
+                esfera2.GetComponent<Renderer>().material.color = IA;
+                esfera3.GetComponent<Renderer>().material.color = IA;
             }
         }
     }
